@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocabulary Practice Program</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f7f9fc;
+            color: #333;
+        }
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #4a6fa5;
+            margin-bottom: 10px;
+        }
+        .main-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .btn {
+            background-color: #4a6fa5;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #3a5a80;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        .btn-success {
+            background-color: #28a745;
+        }
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        .vocabulary-list {
+            margin-top: 20px;
+        }
+        .vocabulary-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #4a6fa5;
+        }
+        .vocabulary-item.correct {
+            border-left-color: #28a745;
+            background-color: #e8f5e9;
+        }
+        .vocabulary-item.incorrect {
+            border-left-color: #dc3545;
+            background-color: #ffebee;
+        }
+        .word-input {
+            width: 100%;
+            padding: 8px 12px;
+            margin-top: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .hint {
+            color: #6c757d;
+            font-size: 14px;
+            margin-top: 5px;
+            cursor: pointer;
+        }
+        .hint:hover {
+            text-decoration: underline;
+        }
+        .example-sentence {
+            display: none;
+            font-style: italic;
+            margin-top: 10px;
+            padding: 8px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+        }
+        .metadata {
+            display: flex;
+            gap: 15px;
+            font-size: 14px;
+            color: #6c757d;
+            margin-top: 8px;
+        }
+        .progress-bar-container {
+            height: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: #4a6fa5;
+            transition: width 0.3s ease;
+        }
+        .mistake-book {
+            margin-top: 30px;
+        }
+        .mistake-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .panpan {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .panpan-image {
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+        .panpan-energy {
+            width: 150px;
+            height: 15px;
+            background-color: #e9ecef;
+            border-radius: 7px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+        .energy-level {
+            height: 100%;
+            background-color: #ffc107;
+            transition: width 0.3s ease;
+        }
+        .speaker {
+            cursor: pointer;
+            margin-left: 5px;
+            color: #4a6fa5;
+        }
+        #test-results {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+        }
+        .hidden {
+            display: none;
+        }
+        .correct-answer {
+            color: #28a745;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        .letter-hint {
+            color: #6c757d;
+            margin-top: 5px;
+        }
+        .feedback {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        .feedback.correct {
+            color: #28a745;
+        }
+        .feedback.incorrect {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>English-Chinese Vocabulary Practice</h1>
+            <p>Improve your vocabulary with practice and tests!</p>
+        </div>
+
+        <div id="main-menu" class="main-menu">
+            <button id="practice-btn" class="btn">Practice Mode</button>
+            <button id="test-btn" class="btn">Test Mode</button>
+            <button id="mistake-book-btn" class="btn btn-secondary">Mistake Book</button>
+        </div>
+
+        <div id="practice-screen" class="hidden">
+            <h2>Practice Mode - Page <span id="current-page">1</span></h2>
+            
+            <div class="progress-bar-container">
+                <div id="progress-bar" class="progress-bar" style="width: 0%"></div>
+            </div>
+            
+            <div id="practice-list" class="vocabulary-list"></div>
+            
+            <div class="controls">
+                <button id="check-answers" class="btn">Check Answers</button>
+                <button id="next-page" class="btn btn-success hidden">Next Page</button>
+                <button id="back-to-menu" class="btn btn-secondary">Back to Menu</button>
+            </div>
+            
+            <div class="panpan">
+                <div class="panpan-image">🐼</div>
+                <p id="panpan-message">Panpan is waiting for you to practice!</p>
+                <div class="panpan-energy">
+                    <div id="energy-level" class="energy-level" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="test-screen" class="hidden">
+            <h2>Test Mode</h2>
+            
+            <div id="test-list" class="vocabulary-list"></div>
+            
+            <div class="controls">
+                <button id="submit-test" class="btn">Submit Test</button>
+                <button id="test-back-to-menu" class="btn btn-secondary">Back to Menu</button>
+            </div>
+            
+            <div id="test-results" class="hidden">
+                <h3>Test Results</h3>
+                <p>Score: <span id="test-score">0</span>/20</p>
+                <div id="incorrect-answers"></div>
+                <div class="controls">
+                    <button id="redo-test" class="btn">Redo Test</button>
+                    <button id="results-back-to-menu" class="btn btn-secondary">Back to Menu</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="mistake-book-screen" class="hidden">
+            <h2>Mistake Book</h2>
+            <div id="mistake-list"></div>
+            <button id="mistake-back-to-menu" class="btn btn-secondary">Back to Menu</button>
+        </div>
+    </div>
+
+    <script>
+        // Vocabulary data from Units 7-10
+        const vocabularyData = [
+            // Unit 7
+            { english: "square", chinese: "广场; 正方形", partOfSpeech: "n.", exampleSentence: "The town square was filled with people." },
+            { english: "meter", chinese: "米; 公尺", partOfSpeech: "n.", exampleSentence: "The room is about 5 meters long." },
+            { english: "deep", chinese: "深的; 纵深的", partOfSpeech: "adj.", exampleSentence: "The lake is very deep in the middle." },
+            { english: "desert", chinese: "沙漠", partOfSpeech: "n.", exampleSentence: "The Sahara is the largest hot desert in the world." },
+            { english: "population", chinese: "人口; 人口数量", partOfSpeech: "n.", exampleSentence: "The population of China is over 1.4 billion." },
+            { english: "Asia", chinese: "亚洲", partOfSpeech: "n.", exampleSentence: "Japan is a country in East Asia." },
+            { english: "feel free", chinese: "随意", partOfSpeech: "phrase", exampleSentence: "Feel free to ask questions any time." },
+            { english: "tour", chinese: "旅行; 旅游", partOfSpeech: "n.", exampleSentence: "We took a tour of the ancient castle." },
+            { english: "tourist", chinese: "旅行者; 观光者", partOfSpeech: "n.", exampleSentence: "Many tourists visit Paris every year." },
+            { english: "wall", chinese: "墙", partOfSpeech: "n.", exampleSentence: "The walls of the old house were made of stone." },
+            { english: "amazing", chinese: "令人大为惊奇的; 令人惊叹（或敬佩）的", partOfSpeech: "adj.", exampleSentence: "The view from the mountain top was amazing." },
+            { english: "ancient", chinese: "古代的; 古老的", partOfSpeech: "adj.", exampleSentence: "The ancient Romans built roads across Europe." },
+            { english: "protect", chinese: "保护; 防护", partOfSpeech: "v.", exampleSentence: "The fence will protect the garden from animals." },
+            { english: "wide", chinese: "宽的; 宽阔的", partOfSpeech: "adj.", exampleSentence: "The river is very wide at this point." },
+            { english: "as far as I know", chinese: "就我所知", partOfSpeech: "phrase", exampleSentence: "As far as I know, he's still living in New York." },
+            { english: "man-made", chinese: "人造的", partOfSpeech: "adj.", exampleSentence: "The lake is man-made, not natural." },
+            { english: "achievement", chinese: "成就; 成绩", partOfSpeech: "n.", exampleSentence: "Winning the gold medal was a great achievement." },
+            { english: "southwestern", chinese: "西南的; 西南方向的", partOfSpeech: "adj.", exampleSentence: "Arizona is in the southwestern United States." },
+            { english: "thick", chinese: "厚的; 浓的", partOfSpeech: "adj.", exampleSentence: "The walls of the castle are very thick." },
+            { english: "include", chinese: "包括; 包含", partOfSpeech: "v.", exampleSentence: "The price includes breakfast." },
+            { english: "freezing", chinese: "极冷的; 结冰的", partOfSpeech: "adj.", exampleSentence: "It's freezing outside - don't forget your coat!" },
+            { english: "condition", chinese: "条件; 状况", partOfSpeech: "n.", exampleSentence: "The book is in excellent condition." },
+            { english: "take in", chinese: "接入", partOfSpeech: "v.", exampleSentence: "The family decided to take in the stray dog." },
+            { english: "succeed", chinese: "实现目标; 成功", partOfSpeech: "v.", exampleSentence: "If you work hard, you will succeed." },
+            { english: "challenge", chinese: "挑战; 考验", partOfSpeech: "v. & n.", exampleSentence: "Learning a new language is a big challenge." },
+            { english: "in the face of", chinese: "面对（问题、困难等）", partOfSpeech: "phrase", exampleSentence: "She remained calm in the face of danger." },
+            { english: "achieve", chinese: "达到; 完成; 成功", partOfSpeech: "v.", exampleSentence: "She achieved her goal of running a marathon." },
+            { english: "force", chinese: "力; 力量", partOfSpeech: "n.", exampleSentence: "The force of the wind damaged the roof." },
+            { english: "nature", chinese: "自然; 大自然", partOfSpeech: "n.", exampleSentence: "I love spending time in nature." },
+            { english: "even though", chinese: "即使; 尽管", partOfSpeech: "conj.", exampleSentence: "Even though it was raining, we went for a walk." },
+            { english: "ocean", chinese: "大海; 海洋", partOfSpeech: "n.", exampleSentence: "The Pacific is the largest ocean in the world." },
+            { english: "the Pacific", chinese: "太平洋", partOfSpeech: "n.", exampleSentence: "Hawaii is in the middle of the Pacific Ocean." },
+            { english: "cm", chinese: "厘米", partOfSpeech: "n.", exampleSentence: "The snake was about 80 cm long." },
+            { english: "weigh", chinese: "重量......", partOfSpeech: "v.", exampleSentence: "The elephant weighs over 5000 kg." },
+            { english: "weight", chinese: "重量", partOfSpeech: "n.", exampleSentence: "What's the weight of your luggage?" },
+            { english: "birth", chinese: "出生; 诞生", partOfSpeech: "n.", exampleSentence: "She's been blind from birth." },
+            { english: "at birth", chinese: "出生时", partOfSpeech: "phrase", exampleSentence: "The baby weighed 3.5 kg at birth." },
+            { english: "up to", chinese: "到达（数量、程度等）; 不多于", partOfSpeech: "phrase", exampleSentence: "You can invite up to five friends." },
+            { english: "adult", chinese: "成年的; 成人的", partOfSpeech: "adj.", exampleSentence: "Children must be accompanied by an adult." },
+            { english: "bamboo", chinese: "竹子", partOfSpeech: "n.", exampleSentence: "Pandas love eating bamboo." },
+            { english: "endangered", chinese: "濒危的", partOfSpeech: "adj.", exampleSentence: "Tigers are an endangered species." },
+            { english: "research", chinese: "研究; 调查", partOfSpeech: "n. & v.", exampleSentence: "She is doing research on climate change." },
+            { english: "keeper", chinese: "饲养员; 管理人", partOfSpeech: "n.", exampleSentence: "The zoo keeper feeds the animals every morning." },
+            { english: "awake", chinese: "醒着", partOfSpeech: "adj.", exampleSentence: "I was still awake at midnight." },
+            { english: "excitement", chinese: "兴奋; 激动", partOfSpeech: "n.", exampleSentence: "There was a lot of excitement before the concert." },
+            { english: "walk into", chinese: "走进", partOfSpeech: "phrase", exampleSentence: "He walked into the room without knocking." },
+            { english: "fall over", chinese: "摔倒", partOfSpeech: "phrase", exampleSentence: "Be careful not to fall over on the ice." },
+            { english: "or so", chinese: "大约", partOfSpeech: "phrase", exampleSentence: "It will take an hour or so to get there." },
+            { english: "illness", chinese: "疾病; 病", partOfSpeech: "n.", exampleSentence: "He's recovering from a serious illness." },
+            { english: "wild", chinese: "野生的", partOfSpeech: "adj.", exampleSentence: "Lions are wild animals." },
+            { english: "government", chinese: "政府; 内阁", partOfSpeech: "n.", exampleSentence: "The government is planning to build a new hospital." },
+            { english: "whale", chinese: "鲸", partOfSpeech: "n.", exampleSentence: "Blue whales are the largest animals on Earth." },
+            { english: "oil", chinese: "油; 食用油; 石油", partOfSpeech: "n.", exampleSentence: "Olive oil is used in many Mediterranean dishes." },
+            { english: "protection", chinese: "保护; 保卫", partOfSpeech: "n.", exampleSentence: "The helmet provides protection for your head." },
+            { english: "huge", chinese: "巨大的; 极多的", partOfSpeech: "adj.", exampleSentence: "The elephant is a huge animal." },
+
+            // Unit 8
+            { english: "treasure", chinese: "财宝; 财富", partOfSpeech: "n.", exampleSentence: "They found buried treasure on the island." },
+            { english: "island", chinese: "岛", partOfSpeech: "n.", exampleSentence: "Japan is an island country." },
+            { english: "full of", chinese: "充满的; (有)大量的; (有)许多的", partOfSpeech: "phrase", exampleSentence: "The box is full of old photographs." },
+            { english: "classic", chinese: "经典作品; 名著", partOfSpeech: "n.", exampleSentence: "'Pride and Prejudice' is a classic of English literature." },
+            { english: "page", chinese: "(书或纸张的)页，面，张", partOfSpeech: "n.", exampleSentence: "The book has over 300 pages." },
+            { english: "hurry", chinese: "急忙; 赶快", partOfSpeech: "v.", exampleSentence: "Hurry up or we'll be late!" },
+            { english: "hurry up", chinese: "赶快; 急忙（做某事）", partOfSpeech: "v.", exampleSentence: "Please hurry up with your homework." },
+            { english: "due", chinese: "预期; 预定", partOfSpeech: "adj.", exampleSentence: "The baby is due in March." },
+            { english: "ship", chinese: "船", partOfSpeech: "n.", exampleSentence: "The ship sailed across the Atlantic." },
+            { english: "tool", chinese: "工具", partOfSpeech: "n.", exampleSentence: "He needs special tools to fix the car." },
+            { english: "gun", chinese: "枪; 炮", partOfSpeech: "n.", exampleSentence: "Soldiers carry guns." },
+            { english: "mark", chinese: "标记; 记号; 分数; 分数", partOfSpeech: "n.", exampleSentence: "The teacher gave him good marks for his test." },
+            { english: "sand", chinese: "沙滩; 沙", partOfSpeech: "n.", exampleSentence: "Children love playing in the sand at the beach." },
+            { english: "cannibal", chinese: "食人肉者", partOfSpeech: "n.", exampleSentence: "The movie is about a tribe of cannibals in the jungle." },
+            { english: "towards", chinese: "朝; 向; 对于", partOfSpeech: "prep.", exampleSentence: "We walked towards the beach." },
+            { english: "land", chinese: "陆地; 大地", partOfSpeech: "n.", exampleSentence: "After weeks at sea, they finally saw land." },
+            { english: "fiction", chinese: "小说", partOfSpeech: "n.", exampleSentence: "She enjoys reading science fiction." },
+            { english: "science fiction", chinese: "科幻小说（或影片等）", partOfSpeech: "n.", exampleSentence: "Star Wars is a popular science fiction movie." },
+            { english: "technology", chinese: "科技; 工艺", partOfSpeech: "n.", exampleSentence: "Computer technology changes rapidly." },
+            { english: "French", chinese: "法语", partOfSpeech: "n.", exampleSentence: "She speaks French fluently." },
+            { english: "pop", chinese: "流行音乐; 流行文化", partOfSpeech: "n.", exampleSentence: "Pop music is popular with teenagers." },
+            { english: "rock", chinese: "摇滚乐", partOfSpeech: "n.", exampleSentence: "He plays guitar in a rock band." },
+            { english: "band", chinese: "乐队", partOfSpeech: "n.", exampleSentence: "The band played three songs." },
+            { english: "country music", chinese: "乡村音乐", partOfSpeech: "n.", exampleSentence: "Country music is popular in the southern United States." },
+            { english: "forever", chinese: "永远", partOfSpeech: "adv.", exampleSentence: "I will remember this day forever." },
+            { english: "abroad", chinese: "在国外; 到国外", partOfSpeech: "adv.", exampleSentence: "She studied abroad for a year." },
+            { english: "actually", chinese: "实际地; 事实上", partOfSpeech: "adv.", exampleSentence: "He looks young, but he's actually 40." },
+            { english: "ever since", chinese: "自从", partOfSpeech: "phrase", exampleSentence: "I've loved swimming ever since I was a child." },
+            { english: "fan", chinese: "迷; 狂热爱好者", partOfSpeech: "n.", exampleSentence: "He's a big fan of basketball." },
+            { english: "southern", chinese: "南方的", partOfSpeech: "adj.", exampleSentence: "Florida is in the southern United States." },
+            { english: "modern", chinese: "现代的; 当代的", partOfSpeech: "adj.", exampleSentence: "The house has modern furniture." },
+            { english: "success", chinese: "成功", partOfSpeech: "n.", exampleSentence: "His new book was a great success." },
+            { english: "belong", chinese: "属于; 归属", partOfSpeech: "v.", exampleSentence: "This book belongs to me." },
+            { english: "one another", chinese: "互相", partOfSpeech: "pron.", exampleSentence: "They helped one another with their homework." },
+            { english: "laughter", chinese: "笑; 笑声", partOfSpeech: "n.", exampleSentence: "The room was filled with laughter." },
+            { english: "beauty", chinese: "美; 美丽", partOfSpeech: "n.", exampleSentence: "The beauty of the mountains took my breath away." },
+            { english: "million", chinese: "一百万", partOfSpeech: "num.", exampleSentence: "The population of the city is over two million." },
+            { english: "record", chinese: "唱片; 记录", partOfSpeech: "n.", exampleSentence: "She broke the world record for the marathon." },
+            { english: "introduce", chinese: "介绍; 引见", partOfSpeech: "v.", exampleSentence: "Let me introduce you to my parents." },
+            { english: "line", chinese: "行; 排", partOfSpeech: "n.", exampleSentence: "Please write your name on the first line." },
+
+            // Unit 9
+            { english: "amusement", chinese: "娱乐; 消遣", partOfSpeech: "n.", exampleSentence: "The children watched the clown with amusement." },
+            { english: "amusement park", chinese: "游乐场", partOfSpeech: "n.", exampleSentence: "We spent the day at the amusement park riding roller coasters." },
+            { english: "somewhere", chinese: "在某处; 到某处", partOfSpeech: "adv.", exampleSentence: "I left my keys somewhere in the house." },
+            { english: "camera", chinese: "照相机; 摄像机", partOfSpeech: "n.", exampleSentence: "He took photos with his digital camera." },
+            { english: "invention", chinese: "发明; 发明物", partOfSpeech: "n.", exampleSentence: "The telephone was a great invention." },
+            { english: "invent", chinese: "发明; 创造", partOfSpeech: "v.", exampleSentence: "Thomas Edison invented the light bulb." },
+            { english: "unbelievable", chinese: "难以置信的; 不可思议的", partOfSpeech: "adj.", exampleSentence: "The magician's tricks were unbelievable." },
+            { english: "progress", chinese: "进步; 进展", partOfSpeech: "n.", exampleSentence: "She has made good progress in her studies." },
+            { english: "toilet", chinese: "卫生间饰; 厕所", partOfSpeech: "n.", exampleSentence: "The toilet is at the end of the corridor." },
+            { english: "encourage", chinese: "鼓励", partOfSpeech: "v.", exampleSentence: "Parents should encourage their children to read." },
+            { english: "social", chinese: "社会的", partOfSpeech: "adj.", exampleSentence: "Humans are social animals." },
+            { english: "peaceful", chinese: "和平的; 安宁的", partOfSpeech: "adj.", exampleSentence: "They lived in a peaceful village by the sea." },
+            { english: "tea art", chinese: "茶艺", partOfSpeech: "n.", exampleSentence: "She studied tea art in China." },
+            { english: "performance", chinese: "表演; 演出", partOfSpeech: "n.", exampleSentence: "We enjoyed the musical performance." },
+            { english: "perfect", chinese: "完美的; 完全的", partOfSpeech: "adj.", exampleSentence: "She speaks perfect English." },
+            { english: "tea set", chinese: "茶具", partOfSpeech: "n.", exampleSentence: "She received a beautiful tea set as a gift." },
+            { english: "itself", chinese: "它自己", partOfSpeech: "pron.", exampleSentence: "The door opened by itself." },
+            { english: "collect", chinese: "收集; 采集; 收藏", partOfSpeech: "v.", exampleSentence: "He collects stamps from around the world." },
+            { english: "a couple of", chinese: "两个; 一对; 几个", partOfSpeech: "phrase", exampleSentence: "I'll be ready in a couple of minutes." },
+            { english: "German", chinese: "德国的; 德国人的; 德国人", partOfSpeech: "adj.", exampleSentence: "She's learning German because she's moving to Berlin." },
+            { english: "theme", chinese: "主题", partOfSpeech: "n.", exampleSentence: "The theme of the party was 'Hollywood Stars'." },
+            { english: "ride", chinese: "乘坐某种游乐设施; 短途旅程", partOfSpeech: "n.", exampleSentence: "The roller coaster is my favorite ride." },
+            { english: "province", chinese: "省份", partOfSpeech: "n.", exampleSentence: "Guangdong is a province in southern China." },
+            { english: "thousand", chinese: "千", partOfSpeech: "num.", exampleSentence: "There were thousands of people at the concert." },
+            { english: "thousands of", chinese: "数以千计的; 许许多多的", partOfSpeech: "phrase", exampleSentence: "Thousands of birds migrate south every winter." },
+            { english: "on the one hand... on the other hand", chinese: "一方面......另一方面......", partOfSpeech: "phrase", exampleSentence: "On the one hand, I want to go out; on the other hand, I'm very tired." },
+            { english: "safe", chinese: "安全的; 无危险的", partOfSpeech: "adj.", exampleSentence: "Is it safe to drink the water here?" },
+            { english: "simply", chinese: "仅仅; 只; 不过", partOfSpeech: "adv.", exampleSentence: "I simply want to help." },
+            { english: "fear", chinese: "害怕; 恐惧", partOfSpeech: "v. & n.", exampleSentence: "Many people fear spiders." },
+
+            // Unit 10
+            { english: "whether", chinese: "不管......（还是）; 或者......（或者）", partOfSpeech: "conj.", exampleSentence: "I don't know whether he'll come or not." },
+            { english: "Indian", chinese: "印度的; 印度人", partOfSpeech: "adj.", exampleSentence: "We ate at an Indian restaurant last night." },
+            { english: "Japanese", chinese: "日本的; 日本人的; 日本人; 日语", partOfSpeech: "adj.", exampleSentence: "She's learning Japanese because she loves anime." },
+            { english: "fox", chinese: "狐狸
